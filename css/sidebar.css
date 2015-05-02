@@ -1,0 +1,53 @@
+#selectedTextWindow {
+	min-height: 200px;
+	max-width: 350px;
+	width: 93%;
+	/*border: 1px solid grey;*/
+	border-radius: 10px;
+	
+}
+
+#itemMirrorSidebar div {
+	padding: 5px 20px;
+}
+
+#okButton {
+	float: right;
+	color: #fff;
+	background: #333;
+	border:none;
+	padding: 10px;
+	cursor: pointer;
+
+}
+
+#closeButton {
+	float: right;
+	color: #fff;
+	background: #333;
+	border:none;
+	padding: 10px;
+	cursor: pointer;
+}
+
+.header {
+	background-color: #333;
+  	color: white;
+  	min-height: 40px;
+  	border-top-left-radius: 10px;
+  	border-top-right-radius: 10px;
+}
+
+.container {
+    margin: auto 0;
+}
+
+img#folderIcon {
+	width: 16px;
+	height: 16px;
+}
+#alert{
+	color: white;
+	font-size: 20px;
+	text-align: center;
+}
