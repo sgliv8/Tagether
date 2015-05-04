@@ -118,7 +118,7 @@ function execute(msg, sender) {
 	}
 }
 
-
+//New filter keywords function
 function filterKeyword(text) {
 	var regex_str;
 	var regex;
@@ -211,7 +211,7 @@ function filterKeyword(text) {
 }
 
 //function to find files match a name pattern
-function findSomeFiles(words, tab) {
+function findSomeFiles(words, tab) {  //words need to change to paragraph
 	var resultSet = [];
 	//filter keyword using stopwords
 	var wordSet = filterKeyword(words);
