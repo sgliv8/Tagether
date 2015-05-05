@@ -47,15 +47,27 @@ function addFolderIcon(msg) {
 	var selectedTextWindow = document.getElementById("selectedTextWindow");
 	if(!selectedTextWindow) {throw "missing selectedTextWindow";}
 
-	var folderNames = createFolderNames(msg.message);
+	console.log('msg.message: %o', msg.message);
+	var folderNames = msg.message;
+
+	//var folderNames = createFolderNames(msg.message);
+	console.log('folderNames: %o', folderNames);
 	var textList = selectedTextWindow.innerHTML.split(' ');
+	console.log('textList: %o', textList);
 	selectedTextWindow.innerHTML = "";
 	for(var key in textList) {
 		var text = textList[key];
+		console.log('text: %o', text);
 		if(folderNames[text]) {
 
-			selectedTextWindow.appendChild(createIcon(folderNames[text]));
-			text = "<a style='padding: 0 4px;'>" + text+ "</a>";
+			if (folderNames[text].length == 1){
+				text = "<a style='padding: 0 4px;'>" + text+ "</a>";
+				selectedTextWindow.appendChild(createSingleIcon(folderNames[text]));
+			} else {
+				text = "<a style='padding: 0 4px;'>" + text+ "</a>";
+				selectedTextWindow.appendChild(createMultipleIcon(folderNames[text]));
+			}
+			
 		}
 		newTextList.push(text);
 		selectedTextWindow.innerHTML += text +" ";
@@ -75,11 +87,20 @@ function createFolderNames(messages) {
 	return folderNames;
 }
 
-function createIcon(path) {
+function createSingleIcon(path) {
 	var icon = document.createElement('img');
 	var imgURL = chrome.extension.getURL("images/folder.png")
 	icon.src = imgURL;
 	icon.id = "folderIcon";
+	icon.title = path;
+	return icon;
+}
+
+function createMultipleIcon(path) {
+	var icon = document.createElement('img');
+	var imgURL = chrome.extension.getURL("images/folders.png")
+	icon.src = imgURL;
+	icon.id = "foldersIcon";
 	icon.title = path;
 	return icon;
 }

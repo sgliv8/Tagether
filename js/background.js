@@ -212,7 +212,7 @@ function filterKeyword(text) {
 
 //function to find files match a name pattern
 function findSomeFiles(words, tab) {  //words need to change to paragraph
-	var resultSet = [];
+	var resultSet = {};
 	//filter keyword using stopwords
 	var wordSet = filterKeyword(words);
 	var searchCount = wordSet.length;
@@ -225,17 +225,21 @@ function findSomeFiles(words, tab) {  //words need to change to paragraph
 				if(error === undefined || (error && error.status == 400)) {
 					console.log("Error %o", error);
 				} else { 
-					console.log('found results: %o', result); 
+					//console.log('found results: %o', result); 
 					// resultSet.push(result);	
 					
 					filter(keyword, result, resultSet);
+					//console.log('resultSet in return function: %o', resultSet);
 
 					searchCount-=1
 					if(searchCount == 1) {
+						//console.log('resultSet in searchCount: %o', resultSet);	
 						var msg = {
 						'action': 'searchResult',
 						'message': resultSet
-						}	
+						}
+
+						console.log('msg.message before send: %o', msg.message);	
 						chrome.tabs.sendMessage(tab.id, msg, logCallback);
 					}
 				}
@@ -245,12 +249,20 @@ function findSomeFiles(words, tab) {  //words need to change to paragraph
 }
 
 function filter(keyword, result, resultSet) {
+	var resultList = [];
 	for(var key in result) {
 		var r = result[key];
 		if(r.isFolder && r.name == keyword) {
 			// var folderName = r.path.split("/").pop();
-			resultSet.push(r.path);
+			resultList.push(r.path);
+			//resultSet.push(r.path);
 		}
+		if (resultList.length != 0){
+			resultSet[keyword] = resultList;
+			console.log('resultSet in filter function: %o', resultSet);
+				
+		}
+		
 	}
 }
 
