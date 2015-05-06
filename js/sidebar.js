@@ -59,7 +59,7 @@ function addFolderIcon(msg) {
 		var text = textList[key];
 		console.log('text: %o', text);
 		if(folderNames[text]) {
-
+			
 			if (folderNames[text].length == 1){
 				text = "<a style='padding: 0 4px;'>" + text+ "</a>";
 				selectedTextWindow.appendChild(createSingleIcon(folderNames[text]));
