@@ -59,12 +59,12 @@ function addFolderIcon(msg) {
 		var text = textList[key];
 		console.log('text: %o', text);
 		if(folderNames[text]) {
-			
+
 			if (folderNames[text].length == 1){
-				text = "<a style='padding: 0 4px;'>" + text+ "</a>";
+				text = "<b style='padding: 0 4px;'>" + text+ "</b>";
 				selectedTextWindow.appendChild(createSingleIcon(folderNames[text]));
 			} else {
-				text = "<a style='padding: 0 4px;'>" + text+ "</a>";
+				text = "<b style='padding: 0 4px;'>" + text+ "</b>";
 				selectedTextWindow.appendChild(createMultipleIcon(folderNames[text]));
 			}
 			
@@ -102,6 +102,43 @@ function createMultipleIcon(path) {
 	icon.src = imgURL;
 	icon.id = "foldersIcon";
 	icon.title = path;
+	//icon.setAttribute('data-toggle', "modal");
+	//icon.setAttribute('data-target', ".multipleIcon");
+
+	icon.onclick = function(){
+		wrapperDiv = document.createElement("div");
+		wrapperDiv.setAttribute("style","position: absolute; left: 0px; top: 0px; background-color: rgb(255, 255, 255); opacity: 0.5; z-index: 2000; height: 1083px; width: 100%;");
+
+		iframeElement = document.createElement("iframe");
+		iframeElement.setAttribute("style","width: 100%; height: 100%;");
+
+		wrapperDiv.appendChild(iframeElement);
+
+		modalDialogParentDiv = document.createElement("div");
+		modalDialogParentDiv.setAttribute("style","position: absolute; width: 350px; border: 1px solid rgb(51, 102, 153); padding: 10px; background-color: rgb(255, 255, 255); z-index: 2001; overflow: auto; text-align: center; top: 149px; left: 497px;");
+
+		modalDialogSiblingDiv = document.createElement("div");
+
+		modalDialogTextDiv = document.createElement("div"); 
+		modalDialogTextDiv.setAttribute("style" , "text-align:center");
+
+		modalDialogTextSpan = document.createElement("span"); 
+		modalDialogText = document.createElement("strong"); 
+		modalDialogText.innerHTML = "Processing...  Please Wait.";
+
+		modalDialogTextSpan.appendChild(modalDialogText);
+		modalDialogTextDiv.appendChild(modalDialogTextSpan);
+		modalDialogTextDiv.appendChild(breakElement);
+		modalDialogTextDiv.appendChild(breakElement);
+		modalDialogTextDiv.appendChild(imageElement);
+
+		modalDialogSiblingDiv.appendChild(modalDialogTextDiv);
+		modalDialogParentDiv.appendChild(modalDialogSiblingDiv);
+
+		document.body.appendChild(wrapperDiv);
+		document.body.appendChild(modalDialogParentDiv);
+	}
+
 	return icon;
 }
 

@@ -214,41 +214,216 @@ function filterKeyword(text) {
 function findSomeFiles(words, tab) {  //words need to change to paragraph
 	var resultSet = {};
 	//filter keyword using stopwords
-	var wordSet = filterKeyword(words);
-	var searchCount = wordSet.length;
-	console.log("Filtered Word Set", wordSet);
-	for(var key in wordSet) {
-		var keyword = wordSet[key];
-		client.findByName('/', keyword, {limit:100}, (function(keyword, resultSet, tab) {
+	var charList = words.split('');
+	console.log('charList: %o', charList);
+	var length = charList.length;
+	var keyword = '';
+
+	var initResult = [];
+
+
+	var mark = 0;
+	for(var c=0; c<length; c++){
+		if (charList[c] == 'a' || charList[c] == 'A' || charList[c] == 'b' || charList[c] == 'B' || charList[c] == 'c' || charList[c] == 'C' || charList[c] == 'd' || charList[c] == 'D' || charList[c] == 'e' || charList[c] == 'E' || charList[c] == 'f' || charList[c] == 'F' || charList[c] == 'g' || charList[c] == 'G' || charList[c] == 'H' || charList[c] == 'h' || charList[c] == 'i' || charList[c] == 'I' || charList[c] == 'J' || charList[c] == 'j' || charList[c] == 'k' || charList[c] == 'K' || charList[c] == 'L' || charList[c] == 'l' || charList[c] == 'M' || charList[c] == 'm' || charList[c] == 'N' || charList[c] == 'n' || charList[c] == 'o' || charList[c] == 'O' || charList[c] == 'p' || charList[c] == 'P' || charList[c] == 'q' || charList[c] == 'Q' || charList[c] == 'R' || charList[c] == 'r' || charList[c] == 'S' || charList[c] == 's' || charList[c] == 'T' || charList[c] == 't' || charList[c] == 'u' || charList[c] == 'U' || charList[c] == 'V' || charList[c] == 'v' || charList[c] == 'W' || charList[c] == 'w' || charList[c] == 'X' || charList[c] == 'x' || charList[c] == 'Y' || charList[c] == 'y' || charList[c] == 'z' || charList[c] == 'Z'){
+			keyword += charList[c];
+			console.log("current keyword: %o", keyword);
+		}
+		if(charList[c] == ' ' || charList[c] == ',' || charList[c] == '.'){
+			mark = c;
+			break;
+		}
+
+	}
+
+	console.log('keyword: %o', keyword);
+	console.log('mark: %o', mark);
+	var formerWordResult = dropboxSearch(keyword, resultSet, mark, charList, tab, initResult);
+	//console.log('resultSet: %o', resultSet);
+
+	console.log('formerWordResult: %o', formerWordResult);
+
+	// if (formerWordResult[1].length > 3){
+	// 	var arr = grabword(charList, mark, '');
+	// 	var lKeyword = arr[0];
+	// 	var start = arr[1];
+	// 	var succeedWordResult = dropboxSearch(lKeyword, resultSet, start, charList, tab, initResult);
+
+	// 	console.log("if -- I want to see the succeed keyword dropboxSearch result: %o", succeedWordResult);
+	// }else {
+	// 	var arr = grabword(charList, mark, '');
+	// 	var lKeyword = arr[0];
+	// 	var start = arr[1];
+
+	// 	var succeedWordResult = dropboxSearch(keyword, resultSet, start, charList, tab, initResult);
+
+	// 	console.log("else -- I want to see the succeed keyword dropboxSearch result: %o", succeedWordResult);
+	// }
+
+	// if(Object.keys(resultSet).length > 3) {
+	// 	var arr = grabword(charList, mark, keyword);
+	// 	var keyword = arr[0];
+	// 	var mark = arr[1];
+	// 	dropboxSearch(keyword, resultSet, tab);
+	// }else {
+	// 	console.log("charList in else function: %o", charList);
+	// 	var arr = grabword(charList, mark, '');
+	// 	var keyword = arr[0];
+	// 	console.log("keyword in else function: %o", keyword);
+	// 	var mark = arr[1];
+	// 	console.log("mark in else function: %o", mark);
+	// 	dropboxSearch(keyword, resultSet, tab);
+	// }
+
+
+	//var wordSet = filterKeyword(words);
+	//var searchCount = wordSet.length;
+	//console.log("Filtered Word Set", wordSet);
+	//for(var key in wordSet) {
+		//var keyword = wordSet[key];
+		
+	//}
+}
+
+
+function dropboxSearch(keyword, resultSet, start, charList, tab, initResult) {
+	console.log("keyword in dropbox search: %o", keyword);
+	console.log("mark in dropbox search: %o", start);
+	//var initResult = [];
+	client.findByName('/', keyword, {limit:100}, function(error, result) {
 			//closure to pass in resultSet correctly due to scope  
-			return function(error, result){
 				if(error === undefined || (error && error.status == 400)) {
 					console.log("Error %o", error);
-				} else { 
-					//console.log('found results: %o', result); 
+				} else {
+					//console.log('found results__keyword: %o', word); 
+					console.log('found results: %o', result); 
+					//console.log('found results__keyword: %o', keyword);
 					// resultSet.push(result);	
 					
-					filter(keyword, result, resultSet);
-					//console.log('resultSet in return function: %o', resultSet);
+					console.log('initResult before used: %o', initResult)
+					initResult = filter(word, result, resultSet);
+					initResult.push(start);
+					console.log('current keyword initResult: %o', initResult);
+					//console.log('resultList in return function: %o', initResult[1]);
+					//console.log('resultSet in return function: %o', initResult[2]);
 
-					searchCount-=1
-					if(searchCount == 1) {
-						//console.log('resultSet in searchCount: %o', resultSet);	
-						var msg = {
-						'action': 'searchResult',
-						'message': resultSet
-						}
+					// if (initResult[1].length > 3){
+					// 	var arr = grabword(charList, start, '');
+					// 	var lKeyword = arr[0];
+					// 	var mark = arr[1];
+					// 	var dropbox = dropboxSearch(lKeyword, resultSet, mark, charList, tab);
 
-						console.log('msg.message before send: %o', msg.message);	
-						chrome.tabs.sendMessage(tab.id, msg, logCallback);
-					}
+					// 	console.log("if -- I want to see the succeed keyword dropboxSearch result: %o", dropbox);
+						//console.log('succeed keyword initResult in if function: %o', initResult);
+
+						
+
+						//var intersection = intersect(initResult, succeedResult);
+
+						// if(intersection.length > 3) {
+						// 	var arr = grabword(charList, start, '');
+						// 	var lKeyword = arr[0];
+						// 	var mark = arr[1];
+						// 	dropboxSearch(lKeyword, resultSet, start, charList, tab);
+
+						// }
+					// } else {
+					// 	console.log("charList in else function: %o", charList);
+					// 	console.log("mark in else function: %o", start);
+					// 	console.log("tab in else function: %o", tab);
+					// 	var arr = grabword(charList, start, '');
+					// 	var keyword = arr[0];
+					// 	console.log("keyword in else function: %o", keyword);
+					// 	var mark = arr[1];
+					// 	console.log("mark in else function: %o", mark);
+					// 	var dropbox = dropboxSearch(keyword, resultSet, mark, charList, tab);
+
+					// 	console.log("else -- I want to see the succeed keyword dropboxSearch result: %o", dropbox);
+
+					// }
+					
+					// if(Object.keys(resultSet).length > 3) {
+					// 	var arr = grabword(charList, start, '');
+					// 	var keyword = arr[0];
+					// 	var mark = arr[1];
+					// 	dropboxSearch(keyword, resultSet, mark, charList, tab);
+					// }else {
+					// 	console.log("charList in else function: %o", charList);
+					// 	console.log("mark in else function: %o", start);
+					// 	console.log("tab in else function: %o", tab);
+					// 	var arr = grabword(charList, start, '');
+					// 	var keyword = arr[0];
+					// 	console.log("keyword in else function: %o", keyword);
+					// 	var mark = arr[1];
+					// 	console.log("mark in else function: %o", mark);
+					// 	dropboxSearch(keyword, resultSet, mark, charList, tab);
+					// }
 				}
-			}
-		})(keyword, resultSet, tab));
+				//console.log('current keyword initResult in return function: %o', initResult);
+			
+		});
+	//console.log('current keyword outside client search function: %o', result);
+	console.log('current keyword outside the closure scope: %o', keyword, resultSet, start, charList, tab, initResult);
+	//console.log('current keyword initResult outside the closure scope: %o', initResult);
+	return resultSet;
+}
+
+
+function addWord(charList, start, keyword){
+	var mark;
+
+	for(var c=start; c<length; c++){
+		if (charList[c] == 'a' || charList[c] == 'A' || charList[c] == 'b' || charList[c] == 'B' || charList[c] == 'c' || charList[c] == 'C' || charList[c] == 'd' || charList[c] == 'D' || charList[c] == 'e' || charList[c] == 'E' || charList[c] == 'f' || charList[c] == 'F' || charList[c] == 'g' || charList[c] == 'G' || charList[c] == 'H' || charList[c] == 'h' || charList[c] == 'i' || charList[c] == 'I' || charList[c] == 'J' || charList[c] == 'j' || charList[c] == 'k' || charList[c] == 'K' || charList[c] == 'L' || charList[c] == 'l' || charList[c] == 'M' || charList[c] == 'm' || charList[c] == 'N' || charList[c] == 'n' || charList[c] == 'o' || charList[c] == 'O' || charList[c] == 'p' || charList[c] == 'P' || charList[c] == 'q' || charList[c] == 'Q' || charList[c] == 'R' || charList[c] == 'r' || charList[c] == 'S' || charList[c] == 's' || charList[c] == 'T' || charList[c] == 't' || charList[c] == 'u' || charList[c] == 'U' || charList[c] == 'V' || charList[c] == 'v' || charList[c] == 'W' || charList[c] == 'w' || charList[c] == 'X' || charList[c] == 'x' || charList[c] == 'Y' || charList[c] == 'y' || charList[c] == 'z' || charList[c] == 'Z'){
+			keyword =+ charList[c];
+		}
+		if(charList[c] == ' ' || charList[c] == "," || charList[c] == '.'){
+			mark = c;
+			break;
+		}
 	}
+	return [keyword, mark];
+}
+
+//function for inter
+function intersect(a, b)
+{
+  var ai = bi= 0;
+  var intersection = [];
+
+  while( ai < a.length && bi < b.length ){
+     if      (a[ai] < b[bi] ){ ai++; }
+     else if (a[ai] > b[bi] ){ bi++; }
+     else /* they're equal */
+     {
+       intersection.push(ai);
+       ai++;
+       bi++;
+     }
+  }
+
+  return intersection;
+}
+
+function grabword(charList, start, keyword) {
+	var mark;
+
+	for(var c=start + 1; c<charList.length; c++){
+		if (charList[c] == 'a' || charList[c] == 'A' || charList[c] == 'b' || charList[c] == 'B' || charList[c] == 'c' || charList[c] == 'C' || charList[c] == 'd' || charList[c] == 'D' || charList[c] == 'e' || charList[c] == 'E' || charList[c] == 'f' || charList[c] == 'F' || charList[c] == 'g' || charList[c] == 'G' || charList[c] == 'H' || charList[c] == 'h' || charList[c] == 'i' || charList[c] == 'I' || charList[c] == 'J' || charList[c] == 'j' || charList[c] == 'k' || charList[c] == 'K' || charList[c] == 'L' || charList[c] == 'l' || charList[c] == 'M' || charList[c] == 'm' || charList[c] == 'N' || charList[c] == 'n' || charList[c] == 'o' || charList[c] == 'O' || charList[c] == 'p' || charList[c] == 'P' || charList[c] == 'q' || charList[c] == 'Q' || charList[c] == 'R' || charList[c] == 'r' || charList[c] == 'S' || charList[c] == 's' || charList[c] == 'T' || charList[c] == 't' || charList[c] == 'u' || charList[c] == 'U' || charList[c] == 'V' || charList[c] == 'v' || charList[c] == 'W' || charList[c] == 'w' || charList[c] == 'X' || charList[c] == 'x' || charList[c] == 'Y' || charList[c] == 'y' || charList[c] == 'z' || charList[c] == 'Z'){
+			keyword += charList[c];
+		}
+		if (charList[c] == "," || charList[c] == "."){
+			continue;
+		}
+		if(charList[c] == ' ' ){
+			mark = c;
+			break;
+		}
+	}
+	return [keyword, mark];
 }
 
 function filter(keyword, result, resultSet) {
+	console.log("keyword in filter: %o", keyword);
+	console.log("result in filter: %o", result);
 	var resultList = [];
 	for(var key in result) {
 		var r = result[key];
@@ -257,13 +432,14 @@ function filter(keyword, result, resultSet) {
 			resultList.push(r.path);
 			//resultSet.push(r.path);
 		}
-		if (resultList.length != 0){
-			resultSet[keyword] = resultList;
-			console.log('resultSet in filter function: %o', resultSet);
-				
-		}
-		
 	}
+	if (resultList.length != 0){
+		resultSet[keyword] = resultList;
+		console.log('resultSet in filter function: %o', resultSet);
+	}
+
+	console.log("resultList in filter function: %o", resultList);
+	return [keyword, resultList, resultSet];
 }
 
 function createAssociation(itemMirror, msg) {
