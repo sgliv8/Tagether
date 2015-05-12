@@ -219,7 +219,7 @@ function findSomeFiles(words, tab) {  //words need to change to paragraph
 	var length = charList.length;
 	var keyword = '';
 
-	var initResult = [];
+	var resultlist = [];
 
 
 	var mark = 0;
