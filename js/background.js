@@ -213,13 +213,14 @@ function filterKeyword(text) {
 //function to find files match a name pattern
 function findSomeFiles(words, tab) {  //words need to change to paragraph
 	var resultSet = {};
+	var initResult = [];
 	//filter keyword using stopwords
 	var charList = words.split('');
 	console.log('charList: %o', charList);
 	var length = charList.length;
 	var keyword = '';
 
-	var resultlist = [];
+	
 
 
 	var mark = 0;
@@ -289,8 +290,9 @@ function dropboxSearch(keyword, resultSet, start, charList, tab, initResult) {
 	console.log("keyword in dropbox search: %o", keyword);
 	console.log("mark in dropbox search: %o", start);
 	//var initResult = [];
-	client.findByName('/', keyword, {limit:100}, function(error, result) {
-			//closure to pass in resultSet correctly due to scope  
+	client.findByName('/', keyword, {limit:100}, (function(word, resultSet, start, charList, tab, initResult) {
+			//closure to pass in resultSet correctly due to scope 
+			return function(error, result){ 
 				if(error === undefined || (error && error.status == 400)) {
 					console.log("Error %o", error);
 				} else {
@@ -299,25 +301,26 @@ function dropboxSearch(keyword, resultSet, start, charList, tab, initResult) {
 					//console.log('found results__keyword: %o', keyword);
 					// resultSet.push(result);	
 					
-					console.log('initResult before used: %o', initResult)
-					initResult = filter(word, result, resultSet);
-					initResult.push(start);
+					//console.log('initResult before used: %o', initResult)
+					filter(word, start, result, resultSet, initResult);
+					//initResult.push(start);
+
 					console.log('current keyword initResult: %o', initResult);
 					//console.log('resultList in return function: %o', initResult[1]);
 					//console.log('resultSet in return function: %o', initResult[2]);
 
-					// if (initResult[1].length > 3){
-					// 	var arr = grabword(charList, start, '');
-					// 	var lKeyword = arr[0];
-					// 	var mark = arr[1];
-					// 	var dropbox = dropboxSearch(lKeyword, resultSet, mark, charList, tab);
+					if (initResult.length > 3){
+						var arr = grabword(charList, start, '');
+						var lKeyword = arr[0];
+						var mark = arr[1];
+						var dropbox = dropboxSearch(lKeyword, resultSet, mark, charList, tab, initResult);
 
-					// 	console.log("if -- I want to see the succeed keyword dropboxSearch result: %o", dropbox);
+						console.log("if -- I want to see the succeed keyword dropboxSearch result__dropbox: %o", dropbox);
 						//console.log('succeed keyword initResult in if function: %o', initResult);
 
 						
 
-						//var intersection = intersect(initResult, succeedResult);
+						// var intersection = intersect(initResult, succeedResult);
 
 						// if(intersection.length > 3) {
 						// 	var arr = grabword(charList, start, '');
@@ -326,20 +329,20 @@ function dropboxSearch(keyword, resultSet, start, charList, tab, initResult) {
 						// 	dropboxSearch(lKeyword, resultSet, start, charList, tab);
 
 						// }
-					// } else {
-					// 	console.log("charList in else function: %o", charList);
-					// 	console.log("mark in else function: %o", start);
-					// 	console.log("tab in else function: %o", tab);
-					// 	var arr = grabword(charList, start, '');
-					// 	var keyword = arr[0];
-					// 	console.log("keyword in else function: %o", keyword);
-					// 	var mark = arr[1];
-					// 	console.log("mark in else function: %o", mark);
-					// 	var dropbox = dropboxSearch(keyword, resultSet, mark, charList, tab);
+					} else {
+						console.log("charList in else function: %o", charList);
+						console.log("mark in else function: %o", start);
+						console.log("tab in else function: %o", tab);
+						var arr = grabword(charList, start, '');
+						var keyword = arr[0];
+						console.log("keyword in else function: %o", keyword);
+						var mark = arr[1];
+						console.log("mark in else function: %o", mark);
+						var dropbox = dropboxSearch(keyword, resultSet, mark, charList, tab, initResult);
 
-					// 	console.log("else -- I want to see the succeed keyword dropboxSearch result: %o", dropbox);
+						console.log("else -- I want to see the succeed keyword dropboxSearch result__dropbox: %o", dropbox);
 
-					// }
+					}
 					
 					// if(Object.keys(resultSet).length > 3) {
 					// 	var arr = grabword(charList, start, '');
@@ -359,12 +362,12 @@ function dropboxSearch(keyword, resultSet, start, charList, tab, initResult) {
 					// }
 				}
 				//console.log('current keyword initResult in return function: %o', initResult);
-			
-		});
+			}
+		})(keyword, resultSet, start, charList, tab, initResult));
 	//console.log('current keyword outside client search function: %o', result);
-	console.log('current keyword outside the closure scope: %o', keyword, resultSet, start, charList, tab, initResult);
+	//console.log('current keyword outside the closure scope: %o', keyword, resultSet, start, charList, tab, initResult);
 	//console.log('current keyword initResult outside the closure scope: %o', initResult);
-	return resultSet;
+	return initResult;
 }
 
 
@@ -421,10 +424,11 @@ function grabword(charList, start, keyword) {
 	return [keyword, mark];
 }
 
-function filter(keyword, result, resultSet) {
+function filter(keyword, start, result, resultSet, initResult) {
 	console.log("keyword in filter: %o", keyword);
 	console.log("result in filter: %o", result);
 	var resultList = [];
+	var list = [];
 	for(var key in result) {
 		var r = result[key];
 		if(r.isFolder && r.name == keyword) {
@@ -438,8 +442,14 @@ function filter(keyword, result, resultSet) {
 		console.log('resultSet in filter function: %o', resultSet);
 	}
 
-	console.log("resultList in filter function: %o", resultList);
-	return [keyword, resultList, resultSet];
+	list.push(keyword);
+	list.push(resultList);
+	list.push(start);
+	list.push(resultSet);
+	initResult.push(list);
+
+	console.log("resultList in filter function: %o", initResult);
+	return initResult;
 }
 
 function createAssociation(itemMirror, msg) {
