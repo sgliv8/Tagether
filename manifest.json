@@ -1,13 +1,15 @@
 {
-  "name": "Knitter",
+  "name": "Tagether",
   "manifest_version": 2,
-  "description": "Quick capture and connect",
-  "version": "2.0",
+  "description": "Tag your information together",
+  "version": "1.0.0",
   "background": {
     "scripts": [    
       "js/lib/dropbox.min.js",
       "js/lib/require.js",
       "js/lib/ItemMirror.min.js",
+      "js/lib/jquery.min.js",
+      "js/lib/underscore.min.js",
       "js/background.js"
     ],
     "persistent": true
@@ -22,13 +24,13 @@
         "<all_urls>"
       ],
       "css": [
-        "css/sidebar.css",
         "css/bootstrap.min.css",
-        "css/jquery-ui.min.css"
+        "css/sidebar.css"
+
       ],
       "js": [
-        "js/lib/jquery-ui.min.js",
         "js/lib/jquery.min.js",
+        "js/lib/underscore.min.js",
         "js/sidebar.js"
       ]
     }
